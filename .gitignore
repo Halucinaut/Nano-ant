@@ -48,3 +48,9 @@ Thumbs.db
 # Config with secrets - 只保留示例配置
 config.yaml
 !config.example.yaml
+
+# Internal documentation
+INTERNAL_README.md
+
+# IDE settings
+.claude/
