@@ -1,0 +1,24 @@
+name: zao_tagging_classification
+type: external_workflow
+goal: 优化 zao-workflow 的 tagging/classification prompt，在代表性 case 上提高分类准确率并保持摘要简洁。
+
+target:
+  type: file
+  path: ${ZAO_WORKFLOW_PATH}/prompts/tagging/classification.md
+
+judge:
+  skill: judge_skills/tagging_quality_skill.yaml
+
+evaluation:
+  command: python3 evaluate_zao_tagging.py --project-path "${ZAO_WORKFLOW_PATH}" --cases "./cases/tagging_cases.json" --mode "${ZAO_TAGGING_EVAL_MODE}" --report "./eval_report.json"
+  cwd: .
+  report:
+    format: nano_ant_eval_v1
+    path: eval_report.json
+
+context:
+  files:
+    - README.md
+
+workspace:
+  path: .nano_ant_workspace/zao_tagging_classification

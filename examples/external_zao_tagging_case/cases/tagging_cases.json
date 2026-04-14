@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "数艘美国军舰通过霍尔木兹海峡",
+    "expected_categories": ["时事"],
+    "expected_need_verify": false,
+    "summary_keywords": ["美国", "霍尔木兹海峡"]
+  },
+  {
+    "id": 2,
+    "title": "欧尔班败选 蒂萨党主席称赢得匈牙利国会选举",
+    "expected_categories": ["时事"],
+    "expected_need_verify": false,
+    "summary_keywords": ["匈牙利", "国会选举"]
+  }
+]

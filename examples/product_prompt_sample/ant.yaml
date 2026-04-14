@@ -1,0 +1,27 @@
+name: product_prompt_sample
+type: internal_prompt
+goal: 优化当前 prompt，在样例 case 上提高通过率，并保持输出稳定。
+
+target:
+  type: file
+  path: prompt.txt
+
+judge:
+  skill: judge_skill.yaml
+
+evaluation:
+  default:
+    cases: cases.json
+    target_llm: target_llm.yaml
+  command: python3 eval_runner.py
+  cwd: .
+  report:
+    format: nano_ant_eval_v1
+    path: eval_report.json
+
+context:
+  files:
+    - task.md
+
+workspace:
+  path: .nano_ant_workspace/product_prompt_sample

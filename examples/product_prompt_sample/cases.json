@@ -1,0 +1,23 @@
+[
+  {
+    "name": "refund_missing_order_id",
+    "input": "我想退款，但是我现在没找到订单号。",
+    "expected_contains": ["订单号", "退款"],
+    "must_not_contain": ["无法帮助你", "不归我管"],
+    "notes": "应该先礼貌说明需要订单号或其他替代信息，不要直接拒绝。"
+  },
+  {
+    "name": "structured_material_followup",
+    "input": "请给我一个三步方案，用来催用户补交开户资料。",
+    "expected_contains": ["1.", "2.", "3."],
+    "must_not_contain": ["长篇背景介绍"],
+    "notes": "需要给出明确的三步结构。"
+  },
+  {
+    "name": "order_status_question",
+    "input": "我昨天买的东西现在到哪了？",
+    "expected_contains": ["订单", "查询"],
+    "must_not_contain": ["不知道", "自己去看"],
+    "notes": "应该引导用户提供查询所需信息。"
+  }
+]

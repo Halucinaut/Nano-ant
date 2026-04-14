@@ -1,0 +1,58 @@
+llm:
+  backend: "http"
+  default:
+    model: "Qwen3-30B-A3B"
+    base_url: ""
+    api_key: ""
+  # 如需切换到 Claude Code CLI，再改回：
+  # backend: "claude_code"
+  # 并可选设置：
+  # claude_code_path: "/absolute/path/to/claude"
+  #
+  # 如需 role 级覆盖，可加：
+  # roles:
+  #   judge:
+  #     model: "Qwen3-30B-A3B"
+
+agent:
+  max_iterations: 10
+  early_stop_rounds: 3
+  action_backend: "llm"
+  retry_per_role: 2
+  use_leader: false
+  claude_code_path: "claude"
+
+workspace:
+  path: "./workspace"
+  sandbox_enabled: true
+
+checkpoint:
+  enabled: true
+  path: "./checkpoints"
+
+logging:
+  level: "info"
+  progress_report: true
+
+harness:
+  enabled: true
+  telemetry_enabled: true
+  use_structured_feedback: true
+  use_sandbox_pool: true
+  use_workflow_sm: true
+  short_circuit_threshold: 3
+
+judge:
+  default_skill: "default"
+  skills:
+    - name: "pm_acceptance"
+      description: "Strict product acceptance audit."
+      applies_to: ["workflow", "user-facing"]
+      pass_threshold: 90
+      audit_focus:
+        - "user-visible correctness"
+        - "verifiable outputs"
+      rubric:
+        - "Reject outputs below the product acceptance bar"
+      required_checks:
+        - "Verify claimed artifacts exist"

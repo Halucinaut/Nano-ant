@@ -1,0 +1,38 @@
+[
+  {
+    "name": "weather_warning",
+    "news_data": [
+      {
+        "title": "北京发布雷雨大风黄色预警",
+        "content": "北京市气象台发布雷雨大风黄色预警，预计今天傍晚至夜间部分地区将出现短时强降雨和8级以上阵风。"
+      }
+    ],
+    "expected_contains": ["预警", "雷雨"],
+    "must_not_contain": ["小编", "据悉", "新闻"],
+    "expected_content_type": "快讯"
+  },
+  {
+    "name": "company_product_launch",
+    "news_data": [
+      {
+        "title": "苹果发布新一代平板电脑",
+        "content": "苹果公司发布新一代iPad Air，升级芯片和屏幕配置，国行版本下周开启预售。"
+      }
+    ],
+    "expected_contains": ["苹果", "iPad"],
+    "must_not_contain": ["未来将", "意义重大"],
+    "expected_content_type": "快讯"
+  },
+  {
+    "name": "transport_disruption",
+    "news_data": [
+      {
+        "title": "上海地铁部分线路晚高峰临时限流",
+        "content": "受设备故障影响，上海地铁2号线和7号线晚高峰期间部分站点采取临时限流措施，乘客需预留更多通勤时间。"
+      }
+    ],
+    "expected_contains": ["地铁", "限流"],
+    "must_not_contain": ["社会意义", "值得关注的是"],
+    "expected_content_type": "快讯"
+  }
+]

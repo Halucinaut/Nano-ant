@@ -1,0 +1,12 @@
+template_type: prompt_optimization
+name: Product Prompt Sample
+description: Sample template for optimizing a customer-service workflow prompt.
+prompt_file: prompt.txt
+cases_file: cases.json
+judge_skill_file: judge_skill.yaml
+target_llm_file: target_llm.yaml
+eval_runner: eval_runner.py
+task_file: task.md
+eval_report_file: eval_report.json
+recommended_command: python eval_runner.py
+template_skill_name: customer_service_prompt_review

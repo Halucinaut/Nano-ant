@@ -1,0 +1,21 @@
+name: customer_service_prompt_review
+description: Evaluate whether the prompt produces clear, action-oriented customer service replies for common workflow cases.
+audit_focus:
+  - instruction clarity
+  - business completeness
+  - structured output when requested
+  - professional service tone
+rubric:
+  - Reward responses that directly solve the user request or clearly ask for the missing information needed to proceed.
+  - Penalize vague wording, passive language, and outputs that fail to guide the next step.
+  - Penalize answers that ignore the requested output structure.
+required_checks:
+  - Confirm eval_runner output was regenerated after prompt changes.
+  - Check that expected phrases or structures appear across the sample cases.
+  - Check that forbidden phrases do not appear.
+pass_threshold: 84
+confidence_hint: high
+applies_to:
+  - customer service
+  - workflow prompt
+  - prompt optimization

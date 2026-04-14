@@ -1,0 +1,21 @@
+name: zao_news_flash_quality
+description: Audit whether the zao-workflow fast-news prompt generates concise, natural, factual broadcast copy.
+audit_focus:
+  - fast-news structural correctness
+  - title and content completeness
+  - spoken-language naturalness
+  - factual restraint
+rubric:
+  - Reward outputs that clearly state the core event and retain the original factual anchor.
+  - Penalize empty titles, stiff phrasing, and copy that sounds like raw written news rather than broadcast speech.
+  - Penalize speculative language, commentary, and any structure that violates the prompt's JSON output contract.
+required_checks:
+  - Confirm the script workflow output remains in the 快讯 path.
+  - Confirm title length and content length stay within a reasonable fast-news range.
+  - Confirm forbidden newsroom phrases do not appear in the final spoken content.
+pass_threshold: 86
+confidence_hint: high
+applies_to:
+  - zao workflow
+  - news flash
+  - external prompt optimization

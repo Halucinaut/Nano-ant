@@ -1,0 +1,10 @@
+{
+  "target_backend": "claude_code",
+  "target_model": "",
+  "cases": 3,
+  "executed_cases": 0,
+  "successful_cases": 0,
+  "failed_cases": 0,
+  "execution_error": "Command '['claude', '-p', '你是一个售后服务助手，负责帮助用户处理退款、补充资料和订单查询相关问题。\\n\\n请遵守这些规则：\\n1. 先直接回应用户当前问题，不要先讲长篇背景。\\n2. 如果信息不足，明确指出还缺什么，并说明下一步。\\n3. 语气礼貌、清晰、专业。\\n4. 如果用户要求结构化方案，请输出编号步骤。\\n5. 不要直接拒绝用户，也不要说“这不归我管”。\\n\\n输出应该尽量简洁，但不能漏掉关键行动建议。\\n\\n\\n[Workflow Input]\\n我想退款，但是我现在没找到订单号。']' timed out after 180 seconds",
+  "results": []
+}

@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Project specific
+checkpoints/
+workspace/
+.nano_ant_workspace/
+.nano_ant_external/
+_pools/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config with secrets - 只保留示例配置
+config.yaml
+!config.example.yaml

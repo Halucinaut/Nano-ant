@@ -1,0 +1,24 @@
+name: zao_tagging_quality
+description: Evaluate the zao-workflow tagging prompt for category precision and concise summary quality.
+audit_focus:
+  - 内容分类是否落在允许标签集合内
+  - 是否避免多打标签和错打标签
+  - need_verify 是否仅在高风险政治类内容触发
+  - 摘要是否保留新闻核心事实且保持一句话
+rubric:
+  - Reward exact category matches on the expected tagging cases.
+  - Penalize outputs that include unsupported tags, empty summaries, or vague summaries.
+  - Penalize summary text that misses the key event or drifts away from the source news.
+  - Penalize unnecessary need_verify flags on ordinary international current affairs.
+required_checks:
+  - Check expected_categories against content_category.
+  - Check expected_need_verify against need_verify.
+  - Check the summary for key entities or event phrases from the case.
+  - Check that the summary is concise and non-empty.
+pass_threshold: 85
+confidence_hint: normal
+applies_to:
+  - zao
+  - tagging
+  - classify
+  - summarize
