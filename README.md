@@ -1,268 +1,120 @@
+```text
+            ██      ██
+          ████    ████
+        ████████████████
+      ████  ████████  ████
+    ████  ████████████  ████
+      ██  ██  ████  ██  ██
+          ██  ████  ██
+        ████  ████  ████
+      ████    ████    ████
+```
+
 # Nano Ant
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> A lightweight iterative harness agent framework. Train your tasks like training a model.
+[English README](./README_EN.md)
 
-[English](#english) | [中文](#中文)
+## 这个项目是怎么来的
 
----
+很多任务表面上在做生成，真正难的是迭代。一个 prompt 第一次写出来通常只能跑通一部分样本；一个工作流节点在新数据上总会暴露新的边界问题；一个已经上线的脚本，稳定性往往来自反复修改、反复运行、反复审查。团队平时处理这类问题的方法很朴素：先试一次，拿结果，找问题，修，再跑一轮。
 
-## English
+`Nano Ant` 就是沿着这个思路做出来的。它不试图吞掉业务系统，也不试图把一切任务包装成一个庞大的自治平台。它只包住那条最关键的闭环：给定一个明确的优化对象，让 Agent 能连续执行、连续评估、连续修正，把一次性生成变成可迭代优化。
 
-### What is Nano Ant?
+这个想法来自对很多领域共通问题的观察：新闻生产里的 prompt 调优、客服工作流的话术修正、内容审核节点的输出稳定性、已有脚本在新样本上的回归问题。这些任务都在重复同一件事：它们需要一个轻量的外壳，去承载“执行结果驱动下一轮改进”的过程。
 
-Nano Ant is a lightweight framework that brings **training-loop thinking** to agent task execution. Instead of relying on one-shot generation, Nano Ant iteratively executes, evaluates, and improves until the task converges to a high-quality solution.
+## 项目愿景
 
-**Core Philosophy:**
-```
-goal → plan → action → judge → feedback → next iteration
-```
+`Nano Ant` 面向所有需要迭代优化的任务。它希望把“自我进化”的感觉落到可运行的工程闭环里：执行、评估、反馈、下一轮修正。优化对象可以是 prompt、规则、局部流程，也可以继续扩展到更多可编辑的任务资产。框架本身保持轻量，只要求用户提供一个可优化对象、一个可运行回路、一个评审标准。
 
-### Key Features
+## 适合谁用
 
-- **Iterative Optimization**: Every execution produces a trajectory; every trajectory gets evaluated; feedback drives the next iteration
-- **Checkpoint & Resume**: Full state persistence allows tasks to pause and resume at any point
-- **Skill-Driven Evaluation**: Task-specific judge skills define custom evaluation criteria
-- **Tool System**: Extensible tool provider architecture supporting built-in tools and MCP-style external providers
-- **Multi-Role Orchestration**: Plan, Action, and Judge roles work together in a closed loop
+产品同学可以用它优化 prompt 和工作流节点；应用工程师可以把已有项目、已有脚本、已有流程接进来做迭代优化；Agent 工程研究者可以把它当作一个专注在 harness、judge 和自我进化的小型运行时。
 
-### Installation
+## 它怎么工作
 
-```bash
-pip install nano-ant
-```
+你给 `Nano Ant` 一个任务目录。目录里放任务描述、当前使用的 `prompt_use.md`、评审用的 `judge_skill.yaml`，以及一个现成的运行脚本。每一轮里，`Nano Ant` 修改优化对象，调用现有运行脚本，读取结构化结果文件，再让 Judge 基于结果和评审规则给出下一轮修正方向。外部项目继续保留自己的执行逻辑，`Nano Ant` 只负责迭代优化。
 
-Or install from source:
+## 和其他框架的差异
+
+| 项目 | 公开定位 | 与 Nano Ant 的差异 |
+| --- | --- | --- |
+| Voyager | 面向 Minecraft 的开放世界长期学习代理，核心模块是自动课程、技能库和基于环境反馈的迭代提示 | `Nano Ant` 不做具身探索，不维护开放世界技能树，主目标是业务任务里的局部优化闭环 |
+| Reflexion | 通过 verbal feedback 和 episodic memory 让语言代理在多次试错中持续改进 | `Nano Ant` 受它启发，但重点放在任务目录、结果协议、JudgeSkill 和可接已有流程的工程运行时 |
+| AgentVerse | 面向多 Agent 协作与 simulation 的框架，公开提供 task-solving 和 simulation 两条主线 | `Nano Ant` 当前不追求多 Agent 社会化协作，主线是单任务、多轮优化 |
+| Hermes Agent | 长期运行、自学习、跨平台常驻代理，包含学习闭环、调度、技能生成、消息网关和完整终端界面 | `Nano Ant` 的边界更窄，聚焦单个任务目录里的迭代收敛，不承担全能个人代理的职责 |
+| EvoMap | 面向 AI self-evolution 的基础设施，强调 GEP、agent-to-agent capability inheritance、资产评分和共享 | `Nano Ant` 当前不做协议网络和能力市场，只关心本地任务怎样一轮轮变好 |
+
+一句话概括差异：很多框架在扩张 Agent 的能力边界，`Nano Ant` 在压缩迭代优化的接入成本。
+
+## 当前支持与版本路线
+
+| 版本 | 用户可见能力 | 状态 |
+| --- | --- | --- |
+| v0.3.x | 内部任务目录运行、外部项目接入、基于 `prompt_use.md` 的多轮 prompt 优化、JudgeSkill、checkpoint、交互式 `ant` CLI、本地配置隔离 | 已支持 |
+| v0.4.x | 更多面向产品同学的任务模板、更多可优化对象、统一任务包分发方式 | 计划中 |
+| v0.5.x | 更强的跨任务策略复用、更完整的自我进化沉淀、更广的 workflow 优化场景 | 计划中 |
+
+## 安装
 
 ```bash
 git clone https://github.com/Halucinaut/Nano-ant.git
-cd Nano-ant
+cd "Nano ant"
 pip install -e .
 ```
 
-### Quick Start
-
-#### 1. Interactive Mode
+安装完成后可以直接使用：
 
 ```bash
 ant
 ```
 
-Then type your task:
-```
-/run ./examples/product_prompt_sample
-```
+## 本地配置
 
-#### 2. Command Line
-
-```bash
-nano-ant "Create a simple calculator with add and subtract functions"
-```
-
-#### 3. Template Mode (for Prompt Optimization)
-
-Create a task directory with:
-- `prompt.txt` - The prompt to optimize
-- `cases.json` - Test cases
-- `judge_skill.yaml` - Evaluation criteria
-
-Then run:
-```bash
-ant ./my_task
-```
-
-### Configuration
-
-Create `config.yaml`:
+仓库里的公开配置文件只保留占位符。真实 `base_url` 和 `api_key` 应该放在本地文件里，不进入 git。推荐做法是新建 `config.local.yaml`，再显式传给 CLI。
 
 ```yaml
 llm:
-  backend: "http"  # or "claude_code"
+  backend: "http"
   default:
-    model: "gpt-4"
-    base_url: "https://api.openai.com/v1"
-    api_key: "your-api-key"
-
-agent:
-  max_iterations: 10
-  early_stop_rounds: 3
+    model: "Qwen3-30B-A3B"
+    base_url: "${NANO_ANT_BASE_URL}"
+    api_key: "${NANO_ANT_API_KEY}"
 ```
 
-### Project Structure
-
-```
-my_task/
-├── ant.yaml              # Task definition
-├── prompt.txt            # Target to optimize
-├── cases.json            # Test cases
-├── judge_skill.yaml      # Evaluation criteria
-└── eval_runner.py        # Custom evaluator (optional)
-```
-
-### Architecture
-
-```
-┌─────────────────────────────────────────┐
-│            Orchestrator                 │
-│   Controls iteration loop & state       │
-└─────────────┬───────────────────────────┘
-              │
-    ┌─────────┼─────────┐
-    ▼         ▼         ▼
-┌───────┐ ┌───────┐ ┌───────┐
-│ Plan  │ │ Action│ │ Judge │
-│ Role  │ │ Role  │ │ Role  │
-└───────┘ └───────┘ └───────┘
-    │         │         │
-    └─────────┼─────────┘
-              ▼
-       Feedback / State
-              │
-              ▼
-        Next Iteration
-```
-
-### Documentation
-
-- [DESIGN.md](./DESIGN.md) - Architecture and design decisions
-- [examples/](./examples/) - Example tasks and use cases
-
-### Contributing
-
-Contributions are welcome! Please feel free to submit issues and pull requests.
-
-### License
-
-MIT License - see [LICENSE](./LICENSE) for details.
-
----
-
-## 中文
-
-### Nano Ant 是什么？
-
-Nano Ant 是一个轻量级 Agent 框架，将**训练循环思想**引入任务执行。不同于一次性生成，Nano Ant 通过迭代执行、评估和改进，直到任务收敛到高质量解决方案。
-
-**核心理念：**
-```
-目标 → 计划 → 执行 → 评估 → 反馈 → 下一轮迭代
-```
-
-### 主要特性
-
-- **迭代优化**: 每次执行产生轨迹，每次轨迹被评估，反馈驱动下一轮
-- **检查点与恢复**: 完整状态持久化，支持任意点暂停和恢复
-- **技能驱动评估**: 任务特定的评估技能定义自定义评估标准
-- **工具系统**: 可扩展的工具提供者架构，支持内置工具和 MCP 风格外部提供者
-- **多角色编排**: Plan、Action、Judge 角色在闭环中协同工作
-
-### 安装
+运行时使用：
 
 ```bash
-pip install nano-ant
+ant --config config.local.yaml
 ```
 
-或从源码安装：
+## 从哪里开始
+
+最短路径是直接进入交互界面，然后运行一个任务目录：
 
 ```bash
-git clone https://github.com/Halucinaut/Nano-ant.git
-cd Nano-ant
-pip install -e .
+ant --config config.local.yaml
 ```
 
-### 快速开始
+进入后：
 
-#### 1. 交互模式
-
-```bash
-ant
-```
-
-然后输入任务：
-```
+```text
 /run ./examples/product_prompt_sample
 ```
 
-#### 2. 命令行
+如果你要接外部项目，可以看这里：
 
-```bash
-nano-ant "创建一个支持加减乘除的简单计算器"
-```
+- [内部任务 sample](./examples/product_prompt_sample/README.md)
+- [外部任务 sample](./examples/external_zao_tagging_case/README.md)
 
-#### 3. 模板模式（用于 Prompt 优化）
+详细的任务协议、sample 目录结构和接入方式都放在各自 sample 目录里，不写在首页。
 
-创建任务目录，包含：
-- `prompt.txt` - 待优化的 prompt
-- `cases.json` - 测试用例
-- `judge_skill.yaml` - 评估标准
+## 参考项目
 
-然后运行：
-```bash
-ant ./my_task
-```
-
-### 配置
-
-创建 `config.yaml`：
-
-```yaml
-llm:
-  backend: "http"  # 或 "claude_code"
-  default:
-    model: "gpt-4"
-    base_url: "https://api.openai.com/v1"
-    api_key: "your-api-key"
-
-agent:
-  max_iterations: 10
-  early_stop_rounds: 3
-```
-
-### 项目结构
-
-```
-my_task/
-├── ant.yaml              # 任务定义
-├── prompt.txt            # 优化目标
-├── cases.json            # 测试用例
-├── judge_skill.yaml      # 评估标准
-└── eval_runner.py        # 自定义评估器（可选）
-```
-
-### 架构
-
-```
-┌─────────────────────────────────────────┐
-│            Orchestrator                 │
-│      控制迭代循环和状态                  │
-└─────────────┬───────────────────────────┘
-              │
-    ┌─────────┼─────────┐
-    ▼         ▼         ▼
-┌───────┐ ┌───────┐ ┌───────┐
-│ Plan  │ │ Action│ │ Judge │
-│ Role  │ │ Role  │ │ Role  │
-└───────┘ └───────┘ └───────┘
-    │         │         │
-    └─────────┼─────────┘
-              ▼
-       反馈 / 状态
-              │
-              ▼
-        下一轮迭代
-```
-
-### 文档
-
-- [DESIGN.md](./DESIGN.md) - 架构和设计决策
-- [examples/](./examples/) - 示例任务和用例
-
-### 贡献
-
-欢迎贡献！请随时提交 issue 和 pull request。
-
-### 许可证
-
-MIT 许可证 - 详见 [LICENSE](./LICENSE)
+- [Voyager](https://voyager.minedojo.org/)
+- [Reflexion](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract-Conference.html)
+- [AgentVerse](https://github.com/OpenBMB/AgentVerse)
+- [Hermes Agent](https://github.com/nousresearch/hermes-agent)
+- [EvoMap](https://evomap.ai/)
