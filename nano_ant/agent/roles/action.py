@@ -129,7 +129,9 @@ class ActionRole(BaseRole):
         return blocks
 
     def _clean_filename(self, filename: str) -> str:
-        filename = filename.strip("./")
+        filename = filename.strip()
+        if filename.startswith("./"):
+            filename = filename[2:]
         for prefix in ["workspace/", "workspace\\"]:
             if filename.startswith(prefix):
                 return filename[len(prefix):]
@@ -176,6 +178,7 @@ Return a JSON object in the response with this shape:
     {{
       "action_type": "write_file" | "edit_file" | "run_command" | "read_file" | "custom_tool",
       "path": "optional/file/path",
+      "content": "required full file content for write_file/edit_file actions",
       "command": "optional shell command",
       "purpose": "why this action matters",
       "expected_output": "what success should look like"
@@ -185,7 +188,11 @@ Return a JSON object in the response with this shape:
   "test_commands": ["optional verification commands"]
 }}
 
-If you need to write files, include full file contents in fenced code blocks and annotate them with:
+If you use write_file or edit_file, you MUST provide the full updated file content.
+Prefer putting the full updated content directly into the action's content field.
+You may also include the same full content in fenced code blocks annotated with:
 # filename: path/to/file.py
+
+If a file action has no full content, the runtime will fail that action.
 """
         return self.execute(prompt, context="\n".join(context_parts))

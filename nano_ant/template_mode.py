@@ -254,8 +254,8 @@ def _target_llm_template() -> dict[str, Any]:
     return {
         "backend": "http",
         "model": "Qwen3-30B-A3B",
-        "base_url": "",
-        "api_key": "",
+        "base_url": "${NANO_ANT_BASE_URL}",
+        "api_key": "${NANO_ANT_API_KEY}",
         "temperature": 0.2,
         "max_tokens": 800,
         "system_prompt": "",

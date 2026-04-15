@@ -34,10 +34,6 @@ def _read_yaml(path: str) -> dict[str, Any]:
     return data
 
 
-def _safe_name(value: str) -> str:
-    return value.replace("\\", "_").replace("/", "_").replace(":", "_").replace(" ", "_")
-
-
 @dataclass
 class ProjectTask(TaskContext):
     """Unified task directory backed by ant.yaml."""
@@ -53,6 +49,7 @@ class ProjectTask(TaskContext):
     judge_skill_path: str = ""
     run_command: str = ""
     run_result_json: str = ""
+    run_timeout: int = 600
     evaluation_target_llm_path: str = ""
     cases_path: str = ""
     goal_text: str = ""
@@ -95,8 +92,8 @@ class ProjectTask(TaskContext):
         default_http_config = {
             "backend": "http",
             "model": "Qwen3-30B-A3B",
-            "base_url": "",
-            "api_key": "",
+            "base_url": "${NANO_ANT_BASE_URL}",
+            "api_key": "${NANO_ANT_API_KEY}",
             "temperature": 0.2,
             "max_tokens": 800,
             "system_prompt": "",
@@ -115,16 +112,48 @@ class ProjectTask(TaskContext):
         with open(self.target_sync_path, "w", encoding="utf-8") as target:
             target.write(content)
 
-    def _load_result_payload(self) -> dict[str, Any]:
+    def _load_result_payload(self, min_mtime: float | None = None) -> dict[str, Any]:
         if not self.run_result_json:
             return {}
         matches = glob.glob(self.run_result_json)
         if not matches:
             raise FileNotFoundError(f"Missing run result JSON: {self.run_result_json}")
         result_path = max(matches, key=os.path.getmtime)
+        if min_mtime is not None and os.path.getmtime(result_path) < min_mtime:
+            raise FileNotFoundError(f"No fresh run result JSON found after command execution: {self.run_result_json}")
         with open(result_path, "r", encoding="utf-8") as handle:
             payload = json.load(handle)
         if isinstance(payload, dict):
+            if isinstance(payload.get("results"), list) and "case_results" not in payload:
+                raw_results = [item for item in payload.get("results", []) if isinstance(item, dict)]
+                total_cases = len(raw_results)
+                successful_cases = sum(1 for item in raw_results if item.get("success"))
+                success_rate = (successful_cases / total_cases) if total_cases else 0.0
+                payload = {
+                    "summary": {
+                        "passed": bool(total_cases and successful_cases == total_cases),
+                        "overall_score": round(success_rate * 100, 2),
+                        "total_cases": total_cases,
+                        "successful_cases": successful_cases,
+                        "success_rate": success_rate,
+                        "text": f"{successful_cases}/{total_cases} cases passed",
+                    },
+                    "case_results": [
+                        {
+                            "name": str(item.get("name", "unnamed")),
+                            "success": bool(item.get("success", False)),
+                            "input": item.get("input", {}),
+                            "actual": item.get("output", {}),
+                            "error": str(item.get("error", "") or ""),
+                            "raw": item,
+                        }
+                        for item in raw_results
+                    ],
+                    "errors": [str(item) for item in payload.get("errors", []) if item],
+                }
+            payload.setdefault("artifacts", [])
+            if isinstance(payload["artifacts"], list):
+                payload["artifacts"].append({"type": "run_result", "path": result_path})
             return payload
         if isinstance(payload, list):
             total_cases = len(payload)
@@ -166,19 +195,25 @@ class ProjectTask(TaskContext):
     def _evaluate_with_command(self) -> EvalReport:
         cwd = self.project_dir
         self._sync_prompt_before_run()
+        previous_latest_mtime = None
+        if self.run_result_json:
+            existing_matches = glob.glob(self.run_result_json)
+            if existing_matches:
+                previous_latest_mtime = max(os.path.getmtime(path) for path in existing_matches)
         result = subprocess.run(
             self.run_command,
             shell=True,
             cwd=cwd,
             capture_output=True,
             text=True,
-            timeout=600,
+            timeout=self.run_timeout,
             check=False,
         )
         payload: dict[str, Any] = {}
-        if self.run_result_json:
+        if result.returncode == 0 and self.run_result_json:
             try:
-                payload = self._load_result_payload()
+                required_mtime = (previous_latest_mtime + 0.000001) if previous_latest_mtime is not None else None
+                payload = self._load_result_payload(min_mtime=required_mtime)
             except Exception as exc:
                 payload = {
                     "meta": {
@@ -198,7 +233,7 @@ class ProjectTask(TaskContext):
                     "errors": [str(exc)],
                     "artifacts": [],
                 }
-        elif result.stdout.strip():
+        elif result.returncode == 0 and result.stdout.strip():
             try:
                 payload = json.loads(result.stdout)
             except json.JSONDecodeError:
@@ -207,10 +242,22 @@ class ProjectTask(TaskContext):
                     "errors": [result.stderr.strip() or "Evaluator did not emit JSON output"],
                     "case_results": [],
                 }
+        if result.returncode != 0:
+            payload = {
+                "summary": {
+                    "passed": False,
+                    "overall_score": 0.0,
+                    "total_cases": 0,
+                    "successful_cases": 0,
+                    "success_rate": 0.0,
+                    "text": "Run command failed",
+                },
+                "case_results": [],
+                "errors": [result.stderr.strip() or result.stdout.strip() or "Run command failed"],
+                "artifacts": [],
+            }
+
         report = EvalReport.from_payload(payload)
-        if result.returncode != 0 and not report.errors:
-            report.errors.append(result.stderr.strip() or "Run command failed")
-            report.passed = False
         if not report.summary:
             report.summary = "Project evaluation completed."
         return report
@@ -297,6 +344,7 @@ class ProjectTask(TaskContext):
 
         run_command = str(run_data.get("command", "") or evaluation_data.get("command", "") or "")
         result_json = str(run_data.get("result_json", "") or report_data.get("path", "") or "")
+        run_timeout = int(run_data.get("timeout", 600) or 600)
         run_result_json = ""
         if result_json:
             run_result_json = os.path.abspath(os.path.join(project_dir, result_json)) if not os.path.isabs(result_json) else result_json
@@ -330,6 +378,7 @@ class ProjectTask(TaskContext):
             judge_skill_path=judge_skill_path,
             run_command=run_command,
             run_result_json=run_result_json,
+            run_timeout=run_timeout,
             evaluation_target_llm_path=evaluation_target_llm_path,
             cases_path=cases_abs_path,
             goal_text=goal_text,

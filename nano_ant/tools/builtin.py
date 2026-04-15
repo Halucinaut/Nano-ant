@@ -100,7 +100,10 @@ class RunCommandTool(Tool):
     risk_level = "high_risk"
     input_schema = {
         "type": "object",
-        "properties": {"command": {"type": "string"}},
+        "properties": {
+            "command": {"type": "string"},
+            "timeout": {"type": "integer"},
+        },
         "required": ["command"],
     }
 
@@ -110,11 +113,13 @@ class RunCommandTool(Tool):
 
     def execute(self, **kwargs: Any) -> ToolResult:
         command = str(kwargs.get("command", "") or "")
+        timeout = kwargs.get("timeout")
+        timeout_value = int(timeout) if isinstance(timeout, (int, float, str)) and str(timeout).strip() else None
         if not command:
             return ToolResult(success=False, message="Missing command for run_command")
 
         if self.sandbox is not None:
-            result = self.sandbox.run_command(command)
+            result = self.sandbox.run_command(command, timeout=timeout_value)
             return ToolResult(
                 success=result.success,
                 tool_name=self.name,
@@ -134,7 +139,7 @@ class RunCommandTool(Tool):
             capture_output=True,
             text=True,
             cwd=self.workspace_path,
-            timeout=60,
+            timeout=timeout_value or 60,
         )
         return ToolResult(
             success=proc.returncode == 0,

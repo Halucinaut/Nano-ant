@@ -8,7 +8,7 @@
 
 ```bash
 cd examples/product_prompt_sample
-python eval_runner.py
+python3 eval_runner.py
 ```
 
 如果评估脚本能正常生成 `eval_report.json`，再进入 Nano Ant：

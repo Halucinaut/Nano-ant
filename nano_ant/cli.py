@@ -183,13 +183,13 @@ Examples:
         "--task-dir",
         type=str,
         default=None,
-        help="Run an internal task directory through the unified TaskContext interface",
+        help="Deprecated compatibility flag. Prefer passing the project dir directly or using --project.",
     )
     parser.add_argument(
         "--external-task-config",
         type=str,
         default=None,
-        help="Run an external task using an integration config file",
+        help="Deprecated compatibility flag for older external integration configs.",
     )
     parser.add_argument(
         "--resource-id",

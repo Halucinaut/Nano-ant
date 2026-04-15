@@ -3,7 +3,6 @@ type: internal_prompt
 goal: 优化当前 prompt，在样例 case 上提高通过率，并保持输出稳定。
 
 target:
-  type: file
   path: prompt.txt
 
 judge:
@@ -22,6 +21,3 @@ evaluation:
 context:
   files:
     - task.md
-
-workspace:
-  path: .nano_ant_workspace/product_prompt_sample

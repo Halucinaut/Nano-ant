@@ -190,15 +190,16 @@ class SandboxExecutor:
                 files_modified=[],
             )
 
-    def run_command(self, command: str, shell: bool = True) -> ExecutionResult:
+    def run_command(self, command: str, shell: bool = True, timeout: int | None = None) -> ExecutionResult:
         """Run a shell command in the sandbox."""
+        effective_timeout = timeout or self.timeout
         try:
             result = subprocess.run(
                 command,
                 shell=shell,
                 capture_output=True,
                 text=True,
-                timeout=self.timeout,
+                timeout=effective_timeout,
                 cwd=self.workspace_path,
             )
 
@@ -215,7 +216,7 @@ class SandboxExecutor:
             return ExecutionResult(
                 success=False,
                 stdout="",
-                stderr=f"Command timed out after {self.timeout} seconds",
+                stderr=f"Command timed out after {effective_timeout} seconds",
                 return_code=-1,
                 files_created=[],
                 files_modified=[],

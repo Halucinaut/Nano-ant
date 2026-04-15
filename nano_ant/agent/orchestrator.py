@@ -383,9 +383,12 @@ class Orchestrator:
             if path:
                 file_candidates.append(path)
 
+        if self.task_context and getattr(self.task_context, "target_path", ""):
+            file_candidates.append(getattr(self.task_context, "target_path"))
+
         files: dict[str, str] = {}
         for filename in dict.fromkeys(file_candidates):
-            filepath = os.path.join(self.config.workspace_path, filename)
+            filepath = filename if os.path.isabs(filename) else os.path.join(self.config.workspace_path, filename)
             if os.path.exists(filepath):
                 with open(filepath, "r", encoding="utf-8") as handle:
                     files[filename] = handle.read()
@@ -394,8 +397,19 @@ class Orchestrator:
     def _apply_action_output(self, action_output: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
         """Execute action output through the tool layer."""
         meta = action_output.get("metadata", {})
+        action_dicts = list(meta.get("actions", []))
+        if self.task_context and getattr(self.task_context, "run_command", ""):
+            task_run_command = getattr(self.task_context, "run_command", "")
+            task_run_timeout = int(getattr(self.task_context, "run_timeout", 600) or 600)
+            for action in action_dicts:
+                if not isinstance(action, dict):
+                    continue
+                if action.get("action_type") == "run_command" and str(action.get("command", "") or "") == task_run_command:
+                    metadata = action.get("metadata", {}) if isinstance(action.get("metadata", {}), dict) else {}
+                    metadata["timeout"] = task_run_timeout
+                    action["metadata"] = metadata
         return self.tool_executor.execute(
-            action_dicts=meta.get("actions", []),
+            action_dicts=action_dicts,
             code_blocks=meta.get("code_blocks", []),
         )
 

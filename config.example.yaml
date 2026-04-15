@@ -2,8 +2,8 @@ llm:
   backend: "http"
   default:
     model: "Qwen3-30B-A3B"
-    base_url: ""
-    api_key: ""
+    base_url: "${NANO_ANT_BASE_URL}"
+    api_key: "${NANO_ANT_API_KEY}"
   # 如需切换到 Claude Code CLI，再改回：
   # backend: "claude_code"
   # 并可选设置：

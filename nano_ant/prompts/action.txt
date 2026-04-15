@@ -38,6 +38,7 @@ Always include a JSON object in your response:
     {
       "action_type": "write_file",
       "path": "path/to/file.py",
+      "content": "full updated file content",
       "purpose": "why this action matters",
       "expected_output": "what success should look like"
     }
@@ -49,7 +50,9 @@ Always include a JSON object in your response:
 
 ## File Writing
 
-When writing files, include full file contents in fenced code blocks and annotate them with:
+When using `write_file` or `edit_file`, always include the full updated file content.
+Prefer putting that content directly in the action's `content` field.
+You may also include the same content in fenced code blocks and annotate them with:
 
 ```python
 # filename: path/to/file.py
@@ -59,6 +62,7 @@ When writing files, include full file contents in fenced code blocks and annotat
 
 - Do not return placeholder implementations
 - Do not use `pass`, `...`, or TODO-only scaffolding for core logic
-- If a file must be written, include the full content
+- If a file must be written or edited, include the full updated content
+- If a file action has no full content, the runtime will fail that action
 - If a command should be run, state it explicitly
 - Favor actions that create observable progress for the Judge

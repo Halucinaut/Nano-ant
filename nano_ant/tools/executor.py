@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+import os
 
 from ..agent.action_models import ActionObservation, normalize_actions
 from .base import ToolResult
@@ -80,15 +81,28 @@ class ActionToolExecutor:
 
         return tool_name, provider_name, arguments
 
+    def _candidate_block_keys(self, path: str) -> list[str]:
+        if not path:
+            return []
+        candidates = [path]
+        if os.path.isabs(path):
+            candidates.append(os.path.relpath(path, self.workspace_path))
+        else:
+            candidates.append(os.path.abspath(os.path.join(self.workspace_path, path)))
+        return list(dict.fromkeys(candidates))
+
     def execute(self, action_dicts: list[dict[str, Any]], code_blocks: list[dict[str, Any]] | None = None) -> tuple[list[dict[str, Any]], list[str]]:
         """Execute action dictionaries and return observations plus modified files."""
         actions = normalize_actions(action_dicts)
         blocks = code_blocks or []
-        block_map = {
-            block["filename"]: block.get("code", "")
-            for block in blocks
-            if block.get("filename")
-        }
+        block_map: dict[str, str] = {}
+        for block in blocks:
+            filename = block.get("filename")
+            if not filename:
+                continue
+            code = block.get("code", "")
+            for key in self._candidate_block_keys(str(filename)):
+                block_map[key] = code
 
         observations: list[dict[str, Any]] = []
         files_modified: list[str] = []
@@ -96,10 +110,18 @@ class ActionToolExecutor:
 
         for action in actions:
             if action.action_type in {"write_file", "edit_file"}:
-                content = action.content or block_map.get(action.path, "")
+                content = action.content
+                matched_key = ""
+                if not content:
+                    for key in self._candidate_block_keys(action.path):
+                        if key in block_map:
+                            content = block_map[key]
+                            matched_key = key
+                            break
                 if action.path and content:
                     action.content = content
-                    consumed_block_paths.add(action.path)
+                    if matched_key:
+                        consumed_block_paths.update(self._candidate_block_keys(action.path))
                 else:
                     result = ToolResult(False, tool_name="write_file", message="Missing file path or content for file action", target=action.path)
                     observations.append(self._result_to_observation(action.action_type, result).to_dict())
