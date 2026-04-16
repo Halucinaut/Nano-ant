@@ -41,11 +41,11 @@ You give `Nano Ant` a task directory. The directory contains the task descriptio
 
 | Project | Public Positioning | Difference From Nano Ant |
 | --- | --- | --- |
-| Voyager | An open-ended embodied lifelong learning agent for Minecraft, centered on automatic curriculum, skill library, and iterative prompting from environment feedback | `Nano Ant` does not target embodied exploration or open-world skill accumulation. It targets local optimization loops inside business tasks |
-| Reflexion | A framework that improves language agents through verbal feedback and episodic memory across repeated trials | `Nano Ant` borrows the iterative spirit, but focuses on task directories, result protocols, JudgeSkill, and integration with existing runnable systems |
-| AgentVerse | A multi-agent framework organized around task-solving and simulation | `Nano Ant` does not optimize for social multi-agent coordination. Its main path is single-task, multi-iteration optimization |
-| Hermes Agent | A persistent self-improving agent with learning loop, scheduling, skill creation, multi-platform messaging, and a full terminal product surface | `Nano Ant` keeps a narrower boundary. It focuses on convergence inside one task directory instead of acting as a general personal agent |
-| EvoMap | Infrastructure for AI self-evolution with GEP, agent-to-agent capability inheritance, and shared evolution assets | `Nano Ant` does not build a protocol network or capability marketplace. It focuses on making one local task improve across iterations |
+| [Voyager](https://voyager.minedojo.org/) | An open-ended embodied lifelong learning agent for Minecraft, centered on automatic curriculum, skill library, and iterative prompting from environment feedback | `Nano Ant` does not target embodied exploration or open-world skill accumulation. It targets local optimization loops inside business tasks |
+| [Reflexion](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract-Conference.html) | A framework that improves language agents through verbal feedback and episodic memory across repeated trials | `Nano Ant` borrows the iterative spirit, but focuses on task directories, result protocols, JudgeSkill, and integration with existing runnable systems |
+| [AgentVerse](https://github.com/OpenBMB/AgentVerse) | A multi-agent framework organized around task-solving and simulation | `Nano Ant` does not optimize for social multi-agent coordination. Its main path is single-task, multi-iteration optimization |
+| [Hermes Agent](https://github.com/nousresearch/hermes-agent) | A persistent self-improving agent with learning loop, scheduling, skill creation, multi-platform messaging, and a full terminal product surface | `Nano Ant` keeps a narrower boundary. It focuses on convergence inside one task directory instead of acting as a general personal agent |
+| [EvoMap](https://evomap.ai/) | Infrastructure for AI self-evolution with GEP, agent-to-agent capability inheritance, and shared evolution assets | `Nano Ant` does not build a protocol network or capability marketplace. It focuses on making one local task improve across iterations |
 
 The short version: many frameworks expand the operating surface of agents; `Nano Ant` reduces the integration cost of iterative optimization.
 
@@ -73,7 +73,7 @@ ant
 
 ## Local Configuration
 
-Tracked config files keep placeholders only. Real `base_url` and `api_key` should stay in a local file outside git history. The recommended pattern is a local `config.local.yaml`, passed explicitly to the CLI.
+The recommended pattern is a local `config.local.yaml`, passed explicitly to the CLI.
 
 ```yaml
 llm:
@@ -111,10 +111,10 @@ If you want to connect an external project, start with these samples:
 
 Detailed task protocols and integration instructions live inside each sample directory rather than on the homepage.
 
-## Reference Projects
+## License
 
-- [Voyager](https://voyager.minedojo.org/)
-- [Reflexion](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract-Conference.html)
-- [AgentVerse](https://github.com/OpenBMB/AgentVerse)
-- [Hermes Agent](https://github.com/nousresearch/hermes-agent)
-- [EvoMap](https://evomap.ai/)
+This project is currently released under the [MIT License](./LICENSE).
+
+## Repository Status
+
+This repository is still evolving quickly. The main usage path is now stable around `ant + task directory`; samples, task protocols, and some runtime details will continue to tighten over time.

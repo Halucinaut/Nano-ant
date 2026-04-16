@@ -41,11 +41,11 @@
 
 | 项目 | 公开定位 | 与 Nano Ant 的差异 |
 | --- | --- | --- |
-| Voyager | 面向 Minecraft 的开放世界长期学习代理，核心模块是自动课程、技能库和基于环境反馈的迭代提示 | `Nano Ant` 不做具身探索，不维护开放世界技能树，主目标是业务任务里的局部优化闭环 |
-| Reflexion | 通过 verbal feedback 和 episodic memory 让语言代理在多次试错中持续改进 | `Nano Ant` 受它启发，但重点放在任务目录、结果协议、JudgeSkill 和可接已有流程的工程运行时 |
-| AgentVerse | 面向多 Agent 协作与 simulation 的框架，公开提供 task-solving 和 simulation 两条主线 | `Nano Ant` 当前不追求多 Agent 社会化协作，主线是单任务、多轮优化 |
-| Hermes Agent | 长期运行、自学习、跨平台常驻代理，包含学习闭环、调度、技能生成、消息网关和完整终端界面 | `Nano Ant` 的边界更窄，聚焦单个任务目录里的迭代收敛，不承担全能个人代理的职责 |
-| EvoMap | 面向 AI self-evolution 的基础设施，强调 GEP、agent-to-agent capability inheritance、资产评分和共享 | `Nano Ant` 当前不做协议网络和能力市场，只关心本地任务怎样一轮轮变好 |
+| [Voyager](https://voyager.minedojo.org/) | 面向 Minecraft 的开放世界长期学习代理，核心模块是自动课程、技能库和基于环境反馈的迭代提示 | `Nano Ant` 不做具身探索，不维护开放世界技能树，主目标是业务任务里的局部优化闭环 |
+| [Reflexion](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract-Conference.html) | 通过 verbal feedback 和 episodic memory 让语言代理在多次试错中持续改进 | `Nano Ant` 受它启发，但重点放在任务目录、结果协议、JudgeSkill 和可接已有流程的工程运行时 |
+| [AgentVerse](https://github.com/OpenBMB/AgentVerse) | 面向多 Agent 协作与 simulation 的框架，公开提供 task-solving 和 simulation 两条主线 | `Nano Ant` 当前不追求多 Agent 社会化协作，主线是单任务、多轮优化 |
+| [Hermes Agent](https://github.com/nousresearch/hermes-agent) | 长期运行、自学习、跨平台常驻代理，包含学习闭环、调度、技能生成、消息网关和完整终端界面 | `Nano Ant` 的边界更窄，聚焦单个任务目录里的迭代收敛，不承担全能个人代理的职责 |
+| [EvoMap](https://evomap.ai/) | 面向 AI self-evolution 的基础设施，强调 GEP、agent-to-agent capability inheritance、资产评分和共享 | `Nano Ant` 当前不做协议网络和能力市场，只关心本地任务怎样一轮轮变好 |
 
 一句话概括差异：很多框架在扩张 Agent 的能力边界，`Nano Ant` 在压缩迭代优化的接入成本。
 
@@ -73,7 +73,7 @@ ant
 
 ## 本地配置
 
-仓库里的公开配置文件只保留占位符。真实 `base_url` 和 `api_key` 应该放在本地文件里，不进入 git。推荐做法是新建 `config.local.yaml`，再显式传给 CLI。
+推荐做法是新建本地的 `config.local.yaml`，再显式传给 CLI。
 
 ```yaml
 llm:
@@ -111,10 +111,10 @@ ant --config config.local.yaml
 
 详细的任务协议、sample 目录结构和接入方式都放在各自 sample 目录里，不写在首页。
 
-## 参考项目
+## 开源协议
 
-- [Voyager](https://voyager.minedojo.org/)
-- [Reflexion](https://proceedings.neurips.cc/paper_files/paper/2023/hash/1b44b878bb782e6954cd888628510e90-Abstract-Conference.html)
-- [AgentVerse](https://github.com/OpenBMB/AgentVerse)
-- [Hermes Agent](https://github.com/nousresearch/hermes-agent)
-- [EvoMap](https://evomap.ai/)
+本项目当前采用 [MIT License](./LICENSE)。
+
+## 仓库状态
+
+当前仓库处于快速迭代阶段。主路径已经稳定在 `ant + 任务目录` 这套使用方式上；sample、任务协议和部分运行细节还会继续收敛。
