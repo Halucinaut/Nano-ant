@@ -40,6 +40,9 @@ workspace/
 .nano_ant_external/
 _pools/
 *.log
+.nano_ant_runs/
+result.json
+eval_report.json
 
 # OS
 .DS_Store
@@ -52,6 +55,9 @@ config.local.yaml
 
 # Internal documentation
 INTERNAL_README.md
+DESIGN.md
+PROJECT.md
+todo.md
 
 # IDE settings
 .claude/
